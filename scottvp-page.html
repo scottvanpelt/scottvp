@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Scott — Trader · Quant · Builder</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,600;9..144,900&family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --bg:#0a0b0d;
+    --bg-soft:#111317;
+    --panel:#15181d;
+    --line:#23272f;
+    --ink:#f4f3ef;
+    --ink-dim:#9aa0aa;
+    --ink-faint:#5f6671;
+    --accent:#d6ff3f;       /* electric lime */
+    --accent-2:#3f8cff;     /* signal blue */
+    --red:#ff5a5f;
+    --green:#39d98a;
+    --display:"Fraunces", Georgia, serif;
+    --sans:"Space Grotesk", system-ui, sans-serif;
+    --mono:"JetBrains Mono", monospace;
+    --maxw:1180px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:var(--sans);
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  /* grain + glow atmosphere */
+  body::before{
+    content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
+    background:
+      radial-gradient(900px 500px at 78% -8%, rgba(63,140,255,.10), transparent 60%),
+      radial-gradient(700px 500px at 10% 12%, rgba(214,255,63,.07), transparent 55%);
+  }
+  body::after{
+    content:"";position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.035;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 28px;position:relative;z-index:1}
+  a{color:inherit;text-decoration:none}
+
+  /* ---------- TICKER ---------- */
+  .ticker{
+    border-bottom:1px solid var(--line);
+    background:rgba(10,11,13,.7);
+    backdrop-filter:blur(8px);
+    font-family:var(--mono);font-size:12px;letter-spacing:.04em;
+    color:var(--ink-dim);overflow:hidden;white-space:nowrap;position:relative;z-index:2;
+  }
+  .ticker .row{display:inline-block;padding:9px 0;animation:scroll 38s linear infinite}
+  .ticker span{margin:0 26px}
+  .ticker b{color:var(--accent);font-weight:500}
+  .ticker .up{color:var(--green)} .ticker .dn{color:var(--red)}
+  @keyframes scroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+  /* ---------- NAV ---------- */
+  nav{position:sticky;top:0;z-index:50;background:rgba(10,11,13,.72);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+  nav .inner{display:flex;align-items:center;justify-content:space-between;height:64px}
+  .logo{font-family:var(--display);font-weight:900;font-size:22px;letter-spacing:-.02em}
+  .logo .dot{color:var(--accent)}
+  .navlinks{display:flex;gap:30px;font-size:14px;font-weight:500;letter-spacing:.01em}
+  .navlinks a{color:var(--ink-dim);transition:color .2s;position:relative}
+  .navlinks a:hover{color:var(--ink)}
+  .navlinks a::after{content:"";position:absolute;left:0;bottom:-6px;width:0;height:2px;background:var(--accent);transition:width .25s}
+  .navlinks a:hover::after{width:100%}
+  .nav-cta{border:1px solid var(--line);padding:8px 16px;border-radius:100px;color:var(--ink)!important;font-size:13px;transition:.2s}
+  .nav-cta:hover{border-color:var(--accent);color:var(--accent)!important}
+  @media(max-width:760px){.navlinks{display:none}}
+
+  /* ---------- HERO ---------- */
+  header{padding:96px 0 80px;position:relative}
+  .eyebrow{font-family:var(--mono);font-size:13px;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);margin-bottom:26px;opacity:0;animation:rise .7s .1s forwards}
+  h1.hero{font-family:var(--display);font-weight:900;font-size:clamp(48px,8vw,104px);line-height:.92;letter-spacing:-.03em;margin-bottom:28px}
+  h1.hero .l{display:block;opacity:0;animation:rise .8s forwards}
+  h1.hero .l:nth-child(1){animation-delay:.18s}
+  h1.hero .l:nth-child(2){animation-delay:.30s}
+  h1.hero .l:nth-child(3){animation-delay:.42s}
+  h1.hero em{font-style:italic;font-weight:300;color:var(--accent)}
+  .sub{max-width:620px;font-size:19px;color:var(--ink-dim);line-height:1.65;margin-bottom:38px;opacity:0;animation:rise .8s .55s forwards}
+  .sub b{color:var(--ink);font-weight:500}
+  .herobtns{display:flex;gap:14px;flex-wrap:wrap;opacity:0;animation:rise .8s .68s forwards}
+  .btn{display:inline-flex;align-items:center;gap:9px;padding:14px 24px;border-radius:100px;font-weight:600;font-size:15px;transition:.22s;border:1px solid transparent}
+  .btn-pri{background:var(--accent);color:#0a0b0d}
+  .btn-pri:hover{transform:translateY(-2px);box-shadow:0 12px 30px -10px rgba(214,255,63,.5)}
+  .btn-sec{border-color:var(--line);color:var(--ink)}
+  .btn-sec:hover{border-color:var(--ink-dim);transform:translateY(-2px)}
+  @keyframes rise{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:14px;overflow:hidden;margin-top:72px;opacity:0;animation:rise .8s .8s forwards}
+  .stat{background:var(--bg-soft);padding:26px 24px}
+  .stat .n{font-family:var(--display);font-weight:900;font-size:38px;letter-spacing:-.02em;line-height:1}
+  .stat .n span{color:var(--accent)}
+  .stat .lbl{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint);margin-top:10px}
+  @media(max-width:760px){.stats{grid-template-columns:repeat(2,1fr)}}
+
+  /* ---------- SECTION CHROME ---------- */
+  section{padding:90px 0;position:relative}
+  .sec-head{display:flex;align-items:baseline;gap:18px;margin-bottom:54px}
+  .sec-num{font-family:var(--mono);font-size:13px;color:var(--accent);letter-spacing:.1em}
+  .sec-title{font-family:var(--display);font-weight:900;font-size:clamp(32px,5vw,56px);letter-spacing:-.02em;line-height:1}
+  .sec-rule{flex:1;height:1px;background:var(--line);align-self:center}
+
+  /* reveal on scroll */
+  .reveal{opacity:0;transform:translateY(30px);transition:opacity .7s ease,transform .7s ease}
+  .reveal.in{opacity:1;transform:none}
+
+  /* ---------- EXPERIENCE ---------- */
+  .xp{display:grid;grid-template-columns:200px 1fr;gap:0;border-top:1px solid var(--line)}
+  .xp-row{display:contents}
+  .xp-row > div{border-bottom:1px solid var(--line);padding:30px 0}
+  .xp-when{font-family:var(--mono);font-size:13px;color:var(--ink-faint);letter-spacing:.04em;padding-right:20px!important}
+  .xp-body h3{font-family:var(--display);font-weight:600;font-size:24px;letter-spacing:-.01em;margin-bottom:4px}
+  .xp-body .org{color:var(--accent);font-weight:500;font-size:15px;margin-bottom:12px}
+  .xp-body p{color:var(--ink-dim);font-size:15px;max-width:640px}
+  .xp-body .tags{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+  .tag{font-family:var(--mono);font-size:11px;letter-spacing:.04em;color:var(--ink-dim);border:1px solid var(--line);padding:4px 10px;border-radius:6px}
+  @media(max-width:680px){.xp{grid-template-columns:1fr}.xp-when{padding-bottom:0!important;border-bottom:none!important}}
+
+  /* ---------- EDUCATION strip ---------- */
+  .edu{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:30px}
+  .edu-card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:26px;transition:.25s}
+  .edu-card:hover{border-color:var(--accent-2);transform:translateY(-4px)}
+  .edu-card .deg{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent-2);margin-bottom:14px}
+  .edu-card h4{font-family:var(--display);font-weight:600;font-size:22px;margin-bottom:6px}
+  .edu-card p{color:var(--ink-dim);font-size:14px}
+  @media(max-width:760px){.edu{grid-template-columns:1fr}}
+
+  /* ---------- PROJECTS ---------- */
+  .proj{display:grid;grid-template-columns:repeat(2,1fr);gap:20px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:30px;transition:.28s;position:relative;overflow:hidden;display:flex;flex-direction:column}
+  .card::before{content:"";position:absolute;inset:0;background:radial-gradient(400px 200px at 100% 0,rgba(214,255,63,.08),transparent 60%);opacity:0;transition:opacity .3s}
+  .card:hover{border-color:var(--accent);transform:translateY(-5px)}
+  .card:hover::before{opacity:1}
+  .card .top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px}
+  .card h3{font-family:var(--display);font-weight:600;font-size:25px;letter-spacing:-.01em}
+  .card .lang{font-family:var(--mono);font-size:11px;letter-spacing:.06em;color:var(--accent);border:1px solid var(--line);padding:5px 9px;border-radius:6px;white-space:nowrap;margin-left:12px}
+  .card p{color:var(--ink-dim);font-size:15px;line-height:1.6;flex:1}
+  .card .stack{display:flex;gap:7px;flex-wrap:wrap;margin:18px 0 20px}
+  .card .stack span{font-family:var(--mono);font-size:10.5px;letter-spacing:.04em;color:var(--ink-faint)}
+  .card .stack span::before{content:"#";color:var(--ink-faint);opacity:.6}
+  .card .gh{font-family:var(--mono);font-size:13px;color:var(--ink);display:inline-flex;align-items:center;gap:8px;align-self:flex-start;border-bottom:1px solid transparent;transition:.2s}
+  .card .gh:hover{color:var(--accent);border-color:var(--accent)}
+  @media(max-width:760px){.proj{grid-template-columns:1fr}}
+
+  /* ---------- VENTURES ---------- */
+  .ven{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+  .ven-card{background:linear-gradient(160deg,var(--panel),var(--bg-soft));border:1px solid var(--line);border-radius:16px;padding:30px;transition:.28s}
+  .ven-card:hover{transform:translateY(-5px);border-color:var(--red)}
+  .ven-card .ico{width:46px;height:46px;border-radius:12px;display:grid;place-items:center;font-family:var(--display);font-weight:900;font-size:22px;margin-bottom:20px;background:rgba(255,90,95,.12);color:var(--red)}
+  .ven-card h3{font-family:var(--display);font-weight:600;font-size:23px;margin-bottom:8px}
+  .ven-card .role{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:14px}
+  .ven-card p{color:var(--ink-dim);font-size:14.5px;line-height:1.6}
+  @media(max-width:760px){.ven{grid-template-columns:1fr}}
+
+  /* ---------- THOUGHTS ---------- */
+  .think{display:grid;grid-template-columns:1.4fr 1fr;gap:48px;align-items:center}
+  .think blockquote{font-family:var(--display);font-weight:300;font-style:italic;font-size:clamp(24px,3.4vw,38px);line-height:1.3;letter-spacing:-.01em}
+  .think blockquote span{color:var(--accent);font-style:normal;font-weight:600}
+  .think .essays{display:flex;flex-direction:column;gap:2px}
+  .essay{border-top:1px solid var(--line);padding:20px 0;cursor:pointer;transition:.2s}
+  .essay:last-child{border-bottom:1px solid var(--line)}
+  .essay:hover{padding-left:10px}
+  .essay .cat{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent-2)}
+  .essay h4{font-family:var(--sans);font-weight:500;font-size:17px;margin-top:6px;transition:color .2s}
+  .essay:hover h4{color:var(--accent)}
+  @media(max-width:760px){.think{grid-template-columns:1fr;gap:32px}}
+
+  /* ---------- FOOTER ---------- */
+  footer{border-top:1px solid var(--line);padding:64px 0 50px;margin-top:30px}
+  .foot{display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:30px}
+  .foot h2{font-family:var(--display);font-weight:900;font-size:clamp(34px,5vw,60px);letter-spacing:-.02em;line-height:.95}
+  .foot h2 em{font-style:italic;font-weight:300;color:var(--accent)}
+  .foot-links{display:flex;gap:24px;font-family:var(--mono);font-size:14px}
+  .foot-links a{color:var(--ink-dim);transition:.2s;border-bottom:1px solid transparent;padding-bottom:3px}
+  .foot-links a:hover{color:var(--accent);border-color:var(--accent)}
+  .colophon{font-family:var(--mono);font-size:11.5px;color:var(--ink-faint);margin-top:48px;letter-spacing:.03em}
+
+  /* ---------- CONTACT FORM ---------- */
+  .contact-form{max-width:520px;margin-top:42px;display:flex;flex-direction:column;gap:14px}
+  .cf-row{display:flex;gap:14px}
+  .contact-form input,.contact-form textarea{
+    flex:1;background:var(--panel);border:1px solid var(--line);border-radius:10px;
+    padding:14px 16px;color:var(--ink);font-family:var(--sans);font-size:15px;resize:vertical;
+  }
+  .contact-form input::placeholder,.contact-form textarea::placeholder{color:var(--ink-faint)}
+  .contact-form input:focus,.contact-form textarea:focus{outline:none;border-color:var(--accent)}
+  .contact-form button{align-self:flex-start;cursor:pointer;border:none;font-family:var(--sans)}
+  .cf-hp{position:absolute!important;left:-9999px!important;opacity:0;height:0;width:0;overflow:hidden}
+  @media(max-width:560px){.cf-row{flex-direction:column}}
+</style>
+</head>
+<body>
+
+<!-- ticker -->
+<div class="ticker">
+  <div class="row">
+    <span><b>TCA</b> execution alpha <span class="up">▲ 17yrs</span></span>
+    <span><b>MKT-MICRO</b> equities · FX · derivatives</span>
+    <span><b>QUANT</b> factor replication <span class="up">▲</span></span>
+    <span><b>DEFI</b> market structure <span class="up">▲</span></span>
+    <span><b>VINO</b> sommelier-grade pairing</span>
+    <span><b>EMBA</b> MIT Sloan '26</span>
+    <span><b>TCA</b> execution alpha <span class="up">▲ 17yrs</span></span>
+    <span><b>MKT-MICRO</b> equities · FX · derivatives</span>
+    <span><b>QUANT</b> factor replication <span class="up">▲</span></span>
+    <span><b>DEFI</b> market structure <span class="up">▲</span></span>
+    <span><b>VINO</b> sommelier-grade pairing</span>
+    <span><b>EMBA</b> MIT Sloan '26</span>
+  </div>
+</div>
+
+<!-- nav -->
+<nav>
+  <div class="wrap inner">
+    <div class="logo">Scott<span class="dot">.</span></div>
+    <div class="navlinks">
+      <a href="#experience">Experience</a>
+      <a href="#education">Education</a>
+      <a href="#projects">Projects</a>
+      <a href="#ventures">Ventures</a>
+      <a href="#thoughts">Thoughts</a>
+      <a href="#contact" class="nav-cta">Get in touch</a>
+    </div>
+  </div>
+</nav>
+
+<!-- hero -->
+<header>
+  <div class="wrap">
+    <div class="eyebrow">Buy-side trader → Quant research → Venture</div>
+    <h1 class="hero">
+      <span class="l">Markets, models,</span>
+      <span class="l">and the <em>microstructure</em></span>
+      <span class="l">in between.</span>
+    </h1>
+    <p class="sub">I'm a senior trader with <b>17+ years on the buy side</b> — transaction cost analysis, execution strategy, and market microstructure across equities, FX, and derivatives. Now building toward <b>quantitative research, systematic strategy, and AI-driven systems</b>, with a side habit of shipping software and pouring good wine.</p>
+    <div class="herobtns">
+      <a href="#projects" class="btn btn-pri">View quant projects →</a>
+      <a href="#contact" class="btn btn-sec">Get in touch</a>
+    </div>
+
+    <div class="stats">
+      <div class="stat"><div class="n">17<span>+</span></div><div class="lbl">Years buy-side</div></div>
+      <div class="stat"><div class="n">3</div><div class="lbl">Asset classes traded</div></div>
+      <div class="stat"><div class="n">10</div><div class="lbl">Quant projects shipped</div></div>
+      <div class="stat"><div class="n">∞</div><div class="lbl">Bottles cellared</div></div>
+    </div>
+  </div>
+</header>
+
+<!-- experience -->
+<section id="experience">
+  <div class="wrap">
+    <div class="sec-head reveal"><span class="sec-num">01</span><span class="sec-title">Experience</span><span class="sec-rule"></span></div>
+    <div class="xp reveal">
+      <div class="xp-row">
+        <div class="xp-when">Current</div>
+        <div class="xp-body">
+          <h3>Strategic Advisor</h3>
+          <div class="org">Deep Market Making</div>
+          <p>Advising an early-stage, AI-driven fixed-income market-making startup — bringing microstructure and execution expertise to product, plus diligence on cap structure and strategy.</p>
+          <div class="tags"><span class="tag">Fixed income</span><span class="tag">Market making</span><span class="tag">AI systems</span></div>
+        </div>
+      </div>
+      <div class="xp-row">
+        <div class="xp-when">Ongoing</div>
+        <div class="xp-body">
+          <h3>Quantitative Research &amp; Systematic Strategy</h3>
+          <div class="org">Independent / Portfolio</div>
+          <p>Building a hands-on quant portfolio: options-based factor replication (Fama-French SMB/HML/UMD), limit-order-book simulation with Avellaneda-Stoikov market-making agents, and production data pipelines. Also authoring a practitioner trading textbook on order generation, microstructure, and coding for traders.</p>
+          <div class="tags"><span class="tag">Factor models</span><span class="tag">LOB simulation</span><span class="tag">Python</span><span class="tag">Julia</span><span class="tag">Rust</span></div>
+        </div>
+      </div>
+      <div class="xp-row">
+        <div class="xp-when">Past</div>
+        <div class="xp-body">
+          <h3>Senior Trader</h3>
+          <div class="org">Dimensional Fund Advisors</div>
+          <p>Buy-side execution across equities, FX, and derivatives. Deep work in transaction cost analysis, venue and algo selection, and pre-trade process design — including queuing-theory-based batch analysis and PM-to-trader feedback loops that reduced trades breaching secondary limits.</p>
+          <div class="tags"><span class="tag">TCA</span><span class="tag">Execution strategy</span><span class="tag">Market microstructure</span><span class="tag">Algo selection</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- education -->
+<section id="education">
+  <div class="wrap">
+    <div class="sec-head reveal"><span class="sec-num">02</span><span class="sec-title">Education</span><span class="sec-rule"></span></div>
+    <div class="edu reveal">
+      <div class="edu-card">
+        <div class="deg">Exutive MBA</div>
+        <h4>MIT Sloan</h4>
+        <p>Executive MBA. Operations, leadership, negotiations, deep learning, macroeconomics, corporate finance, &amp; organizational behavior.</p>
+      </div>
+      <div class="edu-card">
+        <div class="deg">Graduate</div>
+        <h4>Stanford University</h4>
+        <p>Graduate Certificate. Machine learning, optimization, and data science.</p>
+      </div>
+      <div class="edu-card">
+        <div class="deg">Graduate</div>
+        <h4>Texas A&amp;M University</h4>
+        <p>Graduate Coursework (MS). Statistical theory, probability, algorithms.</p>
+      </div>
+      <div class="edu-card">
+        <div class="deg">Graduate</div>
+        <h4>London Business School</h4>
+        <p>Finance and management foundations bridging markets practice with academic rigor.</p>
+      </div>
+      <div class="edu-card">
+        <div class="deg">Undergraduate</div>
+        <h4>UT Austin</h4>
+        <p>Labor economics — with a lasting interest in AI, labor markets, and distributional outcomes.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- projects -->
+<section id="projects">
+  <div class="wrap">
+    <div class="sec-head reveal"><span class="sec-num">03</span><span class="sec-title">Quant Projects</span><span class="sec-rule"></span></div>
+    <div class="proj">
+      <div class="card reveal">
+        <div class="top"><h3>Options Factor Replication</h3><span class="lang">Python</span></div>
+        <p>Replicating Fama-French factor portfolios (SMB / HML / UMD) using an options overlay, built on a pluggable data-adapter architecture for equity-core-plus-options-overlay strategies.</p>
+        <div class="stack"><span>factor-models</span><span>options</span><span>pandas</span><span>backtest</span></div>
+        <a class="gh" href="#" target="_blank" rel="noopener">↗ View on GitHub</a>
+      </div>
+      <div class="card reveal">
+        <div class="top"><h3>LOB Market-Making Sim</h3><span class="lang">Julia</span></div>
+        <p>A limit-order-book simulator with an Avellaneda-Stoikov-style market-making agent — inventory control, optimal quoting, and adverse-selection dynamics. Companion implementation in Rust.</p>
+        <div class="stack"><span>market-making</span><span>avellaneda-stoikov</span><span>julia</span><span>rust</span></div>
+        <a class="gh" href="#" target="_blank" rel="noopener">↗ View on GitHub</a>
+      </div>
+      <div class="card reveal">
+        <div class="top"><h3>Queuing Theory for Pre-Trade</h3><span class="lang">Python</span></div>
+        <p>Applied G/G/N queuing theory to pre-trade batch processing, building an ROI case for algo-assignment automation presented to an executive committee.</p>
+        <div class="stack"><span>queuing-theory</span><span>operations</span><span>analysis</span></div>
+        <a class="gh" href="#" target="_blank" rel="noopener">↗ View on GitHub</a>
+      </div>
+      <div class="card reveal">
+        <div class="top"><h3>Deep Learning for High-Frequency Trading</h3><span class="lang">Python</span></div>
+        <p>A work-in-progress project exploring the application of deep learning techniques to high-frequency trading strategies.</p>
+        <div class="stack"><span>deep-learning</span><span>hft</span><span>pytorch</span></div>
+        <a class="gh" href="#" target="_blank" rel="noopener">↗ View on GitHub</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ventures -->
+<section id="ventures">
+  <div class="wrap">
+    <div class="sec-head reveal"><span class="sec-num">04</span><span class="sec-title">Wine Ventures</span><span class="sec-rule"></span></div>
+    <div class="ven">
+      <div class="ven-card reveal">
+        <div class="ico">W</div>
+        <h3>VinAmici</h3>
+        <div class="role">iOS · SwiftUI · Firebase</div>
+        <p>An AI wine recommender and social network — taken through TestFlight, with Vivino integration, privacy controls, and Firebase sync.</p>
+      </div>
+      <div class="ven-card reveal">
+        <div class="ico">P</div>
+        <h3>PocketSomme</h3>
+        <div class="role">Restaurant wine programs</div>
+        <p>Wine-program management for restaurants with AI sommelier features — pairing intelligence built on sommelier-level varietal knowledge.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- thoughts -->
+<section id="thoughts">
+  <div class="wrap">
+    <div class="sec-head reveal"><span class="sec-num">05</span><span class="sec-title">Thoughts</span><span class="sec-rule"></span></div>
+    <div class="think reveal">
+      <blockquote>The most interesting problems live where <span>market structure</span>, <span>computation</span>, and <span>human incentives</span> collide.</blockquote>
+      <div class="essays">
+        <div class="essay">
+          <div class="cat">Market structure</div>
+          <h4>What buy-side TCA teaches us about crypto &amp; DeFi execution</h4>
+        </div>
+        <div class="essay">
+          <div class="cat">AI &amp; labor</div>
+          <h4>Distributional outcomes for displaced workers in an AI economy</h4>
+        </div>
+        <div class="essay">
+          <div class="cat">Quant</div>
+          <h4>Symmetric random walks &amp; the closed-form expressions worth memorizing</h4>
+        </div>
+        <div class="essay">
+          <div class="cat">Building</div>
+          <h4>Shipping an AI wine app: lessons from OCR, pairing, and the Claude API</h4>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- footer / contact -->
+<footer id="contact">
+  <div class="wrap">
+    <div class="foot">
+      <h2>Let's talk markets,<br><em>models, or merlot.</em></h2>
+      <div class="foot-links">
+        <a href="#">LinkedIn</a>
+        <a href="#">GitHub</a>
+        <a href="#">Résumé</a>
+      </div>
+    </div>
+
+    <form action="https://formspree.io/f/mredrbog" method="POST" class="contact-form">
+      <div class="cf-row">
+        <input type="text" name="name" placeholder="Name" required>
+        <input type="email" name="email" placeholder="Email" required>
+      </div>
+      <textarea name="message" placeholder="What's on your mind?" rows="4" required></textarea>
+      <!-- honeypot: hidden from humans, bots fill it in and get silently dropped -->
+      <input type="text" name="_gotcha" class="cf-hp" tabindex="-1" autocomplete="off">
+      <!-- send the visitor back to your site after submit; replace with your real URL -->
+      <input type="hidden" name="_next" value="https://YOUR_SITE_URL/#contact">
+      <button type="submit" class="btn btn-pri">Send message →</button>
+    </form>
+
+    <div class="colophon">© 2026 Scott · Austin, TX · Built bold. Replace the placeholder links (#) with your real URLs.</div>
+  </div>
+</footer>
+
+<script>
+  // scroll reveal
+  const io = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target);}});
+  },{threshold:.12});
+  document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+</script>
+</body>
+</html>
